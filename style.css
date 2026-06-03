@@ -54,14 +54,13 @@ body {
     display: flex;
     align-items: flex-end;
     margin-bottom: 20px;
-    transition: margin 0.8s ease; /* Para dar espacio cuando la carta salga */
+    transition: margin 0.8s ease; 
 }
 
 .envelope {
     position: relative;
     width: 100%;
     height: 220px;
-    /* Borde rayado de correo (Rojo, Blanco, Verde Oscuro) */
     background: repeating-linear-gradient(
         -45deg,
         #d32f2f 0, #d32f2f 12px,
@@ -70,7 +69,7 @@ body {
         #ffffff 36px, #ffffff 48px
     );
     border-radius: 8px;
-    padding: 8px; /* Grosor del borde de correo */
+    padding: 8px; 
     cursor: pointer;
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     transition: transform 0.3s;
@@ -90,37 +89,40 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
-    background: #fef9c3; /* Base interior amarillo pastel */
+    background: #fef9c3; 
     border-radius: 4px;
 }
 
-/* Frentes del sobre (Los dobleces que apuntan al centro) */
+/* Frentes del sobre */
 .envelope-front {
     position: absolute;
     inset: 0;
-    background: #fde047; /* Amarillo pastel ligeramente más oscuro para contraste */
+    background: #fde047; 
     clip-path: polygon(0 100%, 0 0, 50% 55%, 100% 0, 100% 100%);
     z-index: 4;
     border-radius: 4px;
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    padding-bottom: 20px;
+    padding-bottom: 15px;
 }
 
 .card-title-front {
     color: #854d0e;
-    font-size: 1.4rem;
+    font-size: 1.2rem; /* Tamaño un poco menor para textos largos */
     font-weight: bold;
     z-index: 6;
+    text-align: center;
+    padding: 0 15px;
+    line-height: 1.2;
 }
 
-/* Solapa superior del sobre (La que se abre) */
+/* Solapa superior del sobre */
 .envelope-flap {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 60%;
-    background: #fef08a; /* Amarillo pastel superior */
+    background: #fef08a; 
     clip-path: polygon(0 0, 100% 0, 50% 100%);
     transform-origin: top;
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -143,34 +145,35 @@ body {
     background: #ffffff;
     border-radius: 8px;
     padding: 20px;
-    z-index: 3; /* Detrás del frente del sobre, delante del fondo */
+    z-index: 3; 
     box-shadow: 0 0 15px rgba(0,0,0,0.15);
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0;
     max-height: 180px;
     overflow: hidden;
+    height: fit-content; /* Permite que la carta se ajuste al tamaño exacto de la foto */
 }
 
 /* --- ANIMACIÓN AL ABRIR --- */
 .card-container.opened {
-    margin-top: 180px; /* Da espacio arriba para la carta que sale */
+    margin-top: 280px; /* Da suficiente espacio para listas de música o imágenes altas */
     margin-bottom: 60px;
 }
 
 .card-container.opened .envelope-flap {
-    transform: rotateX(180deg); /* Abre la solapa */
-    z-index: 2; /* Se va hacia atrás */
+    transform: rotateX(180deg); 
+    z-index: 2; 
 }
 
 .card-container.opened .heart-seal {
-    opacity: 0; /* Oculta el corazón al abrir */
+    opacity: 0; 
 }
 
 .card-container.opened .letter {
-    bottom: 130px; /* Desliza la carta hacia arriba saliendo del sobre */
+    bottom: 130px; 
     opacity: 1;
-    max-height: 800px; /* Permite que el contenido se expanda */
-    z-index: 10; /* Trae la carta al frente de todo */
+    max-height: 900px; /* Límite muy alto para que la carta se expanda sin cortar nada */
+    z-index: 10; 
     box-shadow: 0 15px 30px rgba(0,0,0,0.2);
 }
 
@@ -183,7 +186,6 @@ body {
     font-weight: bold;
 }
 
-/* Sistema Carrusel Deslizable */
 .carousel-container {
     width: 100%;
     position: relative;
@@ -212,9 +214,10 @@ body {
 
 .carousel-item img {
     max-width: 100%;
-    max-height: 250px;
+    max-height: 350px;
+    height: auto; /* La imagen dicta su propia altura sin espacios vacíos */
     border-radius: 8px;
-    object-fit: contain; /* Evita que las fotos se deformen */
+    object-fit: contain; 
 }
 
 .carousel-hint {
