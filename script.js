@@ -1,3 +1,5 @@
+
+// Tu link directo obtenido de tu Google Sheets
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRp80A5vVYeOZDcBrDCTsoBZDC7ZfyvhIgRJ4InkcbgcsJ90muDVhthWGuDsElJ677VlD-mYTjfRecZ/pub?output=csv';
 
 function parseCSV(text) {
@@ -21,17 +23,17 @@ function parseCSV(text) {
     return rows;
 }
 
-// NUEVO: Función para arreglar links de imágenes de Google Drive
+// NUEVO: Función actualizada para saltar el bloqueo de Google Drive
 function fixDriveImageLink(url) {
     if (!url) return '';
     let cleanUrl = url.replace(/"/g, '').trim();
-    // Extrae el ID del enlace de Drive (sirve para enlaces con /file/d/ o ?id=)
+    // Extrae el ID del enlace de Drive
     const driveRegex = /(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/;
     const match = cleanUrl.match(driveRegex);
     
     if (match && match[1]) {
-        // Convierte el link a modo "Descarga Directa" para que HTML lo pueda leer como imagen
-        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+        // Usamos el servidor alternativo de Google para evitar el bloqueo de imágenes
+        return `https://lh3.googleusercontent.com/d/${match[1]}`;
     }
     return cleanUrl;
 }
@@ -39,9 +41,14 @@ function fixDriveImageLink(url) {
 function getEmbedUrl(url) {
     if (!url) return '';
     let cleanUrl = url.replace(/"/g, '').trim();
+    
+    // Corrección para que los links de Spotify se conviertan en reproductores
     if (cleanUrl.includes('spotify.com')) {
-        return cleanUrl.replace('/track/', '/embed/track/').replace('/playlist/', '/embed/playlist/');
+        return cleanUrl.replace('/track/', '/embed/track/')
+                       .replace('/playlist/', '/embed/playlist/')
+                       .replace('/album/', '/embed/album/');
     }
+    
     if (cleanUrl.includes('youtube.com/watch')) {
         try {
             const urlParams = new URLSearchParams(cleanUrl.split('?')[1]);
@@ -69,7 +76,7 @@ function createItemHTML(item) {
             </div>
         `;
     } else if (tipo === 'imagen') {
-        // Aplicamos la corrección de Google Drive aquí y Lazy Loading
+        // Aplicamos la corrección de Google Drive aquí
         const imageUrl = fixDriveImageLink(item.url);
         return `
             <div class="carousel-item">
@@ -81,8 +88,6 @@ function createItemHTML(item) {
         `;
     } else if (tipo === 'playlist') {
         const embedUrl = getEmbedUrl(item.url);
-        // MEJORA DE VELOCIDAD: Usamos data-src en lugar de src.
-        // El iframe no se cargará hasta que se abra la carta.
         return `
             <div class="carousel-item">
                 <div class="content-playlist-block" style="width: 100%;">
@@ -153,11 +158,11 @@ async function loadCards() {
                 if (cardBox.classList.contains('opened')) return;
                 cardBox.classList.add('opened');
                 
-                // MEJORA DE VELOCIDAD: Cargar iframes (Spotify/YouTube) solo al abrir la carta
+                // Cargar iframes solo al abrir la carta
                 const iframes = cardBox.querySelectorAll('iframe[data-src]');
                 iframes.forEach(iframe => {
                     iframe.src = iframe.getAttribute('data-src');
-                    iframe.removeAttribute('data-src'); // Evita que se vuelva a cargar
+                    iframe.removeAttribute('data-src'); 
                 });
             });
             
