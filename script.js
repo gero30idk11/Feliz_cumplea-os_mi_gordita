@@ -1,27 +1,19 @@
-// Tu link directo obtenido de tu Google Sheets
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRp80A5vVYeOZDcBrDCTsoBZDC7ZfyvhIgRJ4InkcbgcsJ90muDVhthWGuDsElJ677VlD-mYTjfRecZ/pub?output=csv';
 
-// Procesador de datos CSV robusto
 function parseCSV(text) {
     let lines = text.split(/\r?\n/);
     let rows = [];
-    for (let i = 1; i < lines.length; i++) { // Salta la cabecera
+    for (let i = 1; i < lines.length; i++) {
         let line = lines[i];
         if (!line.trim()) continue;
-        
         let arr = [];
         let inQuotes = false;
         let item = '';
         for (let j = 0; j < line.length; j++) {
             let char = line[j];
-            if (char === '"') {
-                inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
-                arr.push(item.trim());
-                item = '';
-            } else {
-                item += char;
-            }
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { arr.push(item.trim()); item = ''; }
+            else item += char;
         }
         arr.push(item.trim());
         rows.push(arr);
@@ -29,17 +21,27 @@ function parseCSV(text) {
     return rows;
 }
 
-// Convertidor automático de links de música a reproductores incrustados (Embed)
+// NUEVO: Función para arreglar links de imágenes de Google Drive
+function fixDriveImageLink(url) {
+    if (!url) return '';
+    let cleanUrl = url.replace(/"/g, '').trim();
+    // Extrae el ID del enlace de Drive (sirve para enlaces con /file/d/ o ?id=)
+    const driveRegex = /(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/;
+    const match = cleanUrl.match(driveRegex);
+    
+    if (match && match[1]) {
+        // Convierte el link a modo "Descarga Directa" para que HTML lo pueda leer como imagen
+        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    }
+    return cleanUrl;
+}
+
 function getEmbedUrl(url) {
     if (!url) return '';
     let cleanUrl = url.replace(/"/g, '').trim();
-    
-    // Convertir Spotify
-    if (cleanUrl.includes('open.spotify.com')) {
-        return cleanUrl.replace('open.spotify.com/', 'open.spotify.com/embed/');
+    if (cleanUrl.includes('spotify.com')) {
+        return cleanUrl.replace('/track/', '/embed/track/').replace('/playlist/', '/embed/playlist/');
     }
-    
-    // Convertir YouTube Video
     if (cleanUrl.includes('youtube.com/watch')) {
         try {
             const urlParams = new URLSearchParams(cleanUrl.split('?')[1]);
@@ -50,19 +52,9 @@ function getEmbedUrl(url) {
         const id = cleanUrl.split('youtu.be/')[1].split('?')[0];
         return `https://www.youtube.com/embed/${id}`;
     }
-    
-    // Convertir YouTube Playlist
-    if (cleanUrl.includes('youtube.com/playlist')) {
-        try {
-            const urlParams = new URLSearchParams(cleanUrl.split('?')[1]);
-            return `https://www.youtube.com/embed/videoseries?list=${urlParams.get('list')}`;
-        } catch(e) { return cleanUrl; }
-    }
-    
     return cleanUrl;
 }
 
-// Crea la estructura visual correspondiente de cada celda
 function createItemHTML(item) {
     const tipo = item.tipo.toLowerCase().trim();
     const tituloHtml = item.titulo ? `<h3 class="item-title">${item.titulo}</h3>` : '';
@@ -72,26 +64,30 @@ function createItemHTML(item) {
             <div class="carousel-item">
                 <div class="content-text-block">
                     ${tituloHtml}
-                    <p>${item.url}</p>
+                    <p>${item.url.replace(/"/g, '')}</p>
                 </div>
             </div>
         `;
     } else if (tipo === 'imagen') {
+        // Aplicamos la corrección de Google Drive aquí y Lazy Loading
+        const imageUrl = fixDriveImageLink(item.url);
         return `
             <div class="carousel-item">
                 <div class="content-image-block">
                     ${tituloHtml}
-                    <img src="${item.url.replace(/"/g, '')}" alt="${item.titulo}">
+                    <img src="${imageUrl}" alt="${item.titulo || 'Imagen'}" loading="lazy">
                 </div>
             </div>
         `;
     } else if (tipo === 'playlist') {
         const embedUrl = getEmbedUrl(item.url);
+        // MEJORA DE VELOCIDAD: Usamos data-src en lugar de src.
+        // El iframe no se cargará hasta que se abra la carta.
         return `
             <div class="carousel-item">
                 <div class="content-playlist-block" style="width: 100%;">
                     ${tituloHtml}
-                    <iframe src="${embedUrl}" width="100%" height="350" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    <iframe data-src="${embedUrl}" width="100%" height="300" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                 </div>
             </div>
         `;
@@ -99,7 +95,6 @@ function createItemHTML(item) {
     return '';
 }
 
-// Lector principal de datos
 async function loadCards() {
     const grid = document.getElementById('cards-grid');
     try {
@@ -107,7 +102,6 @@ async function loadCards() {
         const dataText = await response.text();
         const rows = parseCSV(dataText);
         
-        // Agrupar filas según la columna "Carta"
         const cardsMap = {};
         rows.forEach(row => {
             const cardName = row[0];
@@ -117,41 +111,54 @@ async function loadCards() {
             
             if (!cardName) return;
             if (!cardsMap[cardName]) cardsMap[cardName] = [];
-            
             cardsMap[cardName].push({ tipo, titulo, url });
         });
         
-        grid.innerHTML = ''; // Limpiar mensaje de carga
+        grid.innerHTML = ''; 
         
-        // Generar las cartas en la interfaz
         Object.keys(cardsMap).forEach(cardName => {
             const items = cardsMap[cardName];
             const cardBox = document.createElement('div');
-            cardBox.className = 'card-box';
+            cardBox.className = 'card-container';
             
             let itemsHTML = items.map(item => createItemHTML(item)).join('');
             let hintHTML = items.length > 1 ? `<div class="carousel-hint">← Desliza la carta para ver más →</div>` : '';
             
+            // Nueva estructura HTML del sobre
             cardBox.innerHTML = `
-                <div class="card-cover">
-                    <div class="heart">❤️</div>
-                    <h2>${cardName}</h2>
-                    <span>Toca para abrir</span>
-                </div>
-                <div class="card-content">
-                    <div class="carousel-container">
-                        <div class="carousel-track">
-                            ${itemsHTML}
+                <div class="envelope">
+                    <div class="envelope-inner">
+                        <div class="letter">
+                            <div class="carousel-container">
+                                <div class="carousel-track">
+                                    ${itemsHTML}
+                                </div>
+                            </div>
+                            ${hintHTML}
+                        </div>
+                        
+                        <div class="envelope-front">
+                            <h2 class="card-title-front">${cardName}</h2>
+                        </div>
+                        
+                        <div class="envelope-flap">
+                            <div class="heart-seal">❤️</div>
                         </div>
                     </div>
-                    ${hintHTML}
                 </div>
             `;
             
-            // Animación de apertura al hacer clic
+            // Evento al abrir la carta
             cardBox.addEventListener('click', function() {
                 if (cardBox.classList.contains('opened')) return;
                 cardBox.classList.add('opened');
+                
+                // MEJORA DE VELOCIDAD: Cargar iframes (Spotify/YouTube) solo al abrir la carta
+                const iframes = cardBox.querySelectorAll('iframe[data-src]');
+                iframes.forEach(iframe => {
+                    iframe.src = iframe.getAttribute('data-src');
+                    iframe.removeAttribute('data-src'); // Evita que se vuelva a cargar
+                });
             });
             
             grid.appendChild(cardBox);
@@ -159,7 +166,7 @@ async function loadCards() {
         
     } catch (error) {
         console.error(error);
-        grid.innerHTML = `<div class="loading" style="color: #fca5a5;">Error al cargar las sorpresas. Asegúrate de que el Excel esté publicado como CSV.</div>`;
+        grid.innerHTML = `<div class="loading" style="color: #fca5a5;">Error al cargar las sorpresas. Revisa tu enlace de Excel.</div>`;
     }
 }
 
