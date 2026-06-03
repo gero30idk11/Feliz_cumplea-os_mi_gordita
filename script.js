@@ -1,5 +1,3 @@
-
-// Tu link directo obtenido de tu Google Sheets
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRp80A5vVYeOZDcBrDCTsoBZDC7ZfyvhIgRJ4InkcbgcsJ90muDVhthWGuDsElJ677VlD-mYTjfRecZ/pub?output=csv';
 
 function parseCSV(text) {
@@ -23,16 +21,13 @@ function parseCSV(text) {
     return rows;
 }
 
-// NUEVO: Función actualizada para saltar el bloqueo de Google Drive
 function fixDriveImageLink(url) {
     if (!url) return '';
     let cleanUrl = url.replace(/"/g, '').trim();
-    // Extrae el ID del enlace de Drive
     const driveRegex = /(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/;
     const match = cleanUrl.match(driveRegex);
     
     if (match && match[1]) {
-        // Usamos el servidor alternativo de Google para evitar el bloqueo de imágenes
         return `https://lh3.googleusercontent.com/d/${match[1]}`;
     }
     return cleanUrl;
@@ -42,7 +37,6 @@ function getEmbedUrl(url) {
     if (!url) return '';
     let cleanUrl = url.replace(/"/g, '').trim();
     
-    // Corrección para que los links de Spotify se conviertan en reproductores
     if (cleanUrl.includes('spotify.com')) {
         return cleanUrl.replace('/track/', '/embed/track/')
                        .replace('/playlist/', '/embed/playlist/')
@@ -76,7 +70,6 @@ function createItemHTML(item) {
             </div>
         `;
     } else if (tipo === 'imagen') {
-        // Aplicamos la corrección de Google Drive aquí
         const imageUrl = fixDriveImageLink(item.url);
         return `
             <div class="carousel-item">
@@ -88,11 +81,12 @@ function createItemHTML(item) {
         `;
     } else if (tipo === 'playlist') {
         const embedUrl = getEmbedUrl(item.url);
+        // AJUSTE: height="380" asegura que Spotify muestre la carátula y mínimo 3-4 canciones en la lista
         return `
             <div class="carousel-item">
                 <div class="content-playlist-block" style="width: 100%;">
                     ${tituloHtml}
-                    <iframe data-src="${embedUrl}" width="100%" height="300" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    <iframe data-src="${embedUrl}" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                 </div>
             </div>
         `;
@@ -129,7 +123,6 @@ async function loadCards() {
             let itemsHTML = items.map(item => createItemHTML(item)).join('');
             let hintHTML = items.length > 1 ? `<div class="carousel-hint">← Desliza la carta para ver más →</div>` : '';
             
-            // Nueva estructura HTML del sobre
             cardBox.innerHTML = `
                 <div class="envelope">
                     <div class="envelope-inner">
@@ -155,14 +148,35 @@ async function loadCards() {
             
             // Evento al abrir la carta
             cardBox.addEventListener('click', function() {
+                // Si la carta ya está abierta, no hacemos nada
                 if (cardBox.classList.contains('opened')) return;
+
+                // NUEVO LOGICA: Cerrar todas las otras cartas suavemente
+                const allCards = document.querySelectorAll('.card-container');
+                allCards.forEach(c => {
+                    if (c !== cardBox && c.classList.contains('opened')) {
+                        c.classList.remove('opened');
+                        
+                        // Extra: Apagar la música de la carta que se acaba de cerrar
+                        const iframesToStop = c.querySelectorAll('iframe');
+                        iframesToStop.forEach(iframe => {
+                            const currentSrc = iframe.src;
+                            iframe.setAttribute('data-src', currentSrc); 
+                            iframe.src = ''; // Corta el audio inmediatamente
+                        });
+                    }
+                });
+
+                // Abrir la carta que tocamos
                 cardBox.classList.add('opened');
                 
-                // Cargar iframes solo al abrir la carta
+                // Cargar la música/videos solo para esta carta
                 const iframes = cardBox.querySelectorAll('iframe[data-src]');
                 iframes.forEach(iframe => {
-                    iframe.src = iframe.getAttribute('data-src');
-                    iframe.removeAttribute('data-src'); 
+                    if (iframe.getAttribute('data-src')) {
+                        iframe.src = iframe.getAttribute('data-src');
+                        iframe.removeAttribute('data-src'); 
+                    }
                 });
             });
             
