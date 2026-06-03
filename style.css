@@ -1,0 +1,196 @@
+/* Estilos Generales y Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #2e1065, #581c87, #3b0764); /* Fondo Morado Premium */
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #ffffff;
+}
+
+.header-container {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header-container h1 {
+    font-size: 2.5rem;
+    color: #fef08a; /* Amarillo pastel brillante */
+    text-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+}
+
+.header-container p {
+    font-size: 1.1rem;
+    color: #e9d5ff;
+}
+
+/* Grid de distribución de Cartas */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.loading {
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2rem;
+    color: #fef08a;
+}
+
+/* Estructura de la Carta (Amarillo Pastel) */
+.card-box {
+    background-color: #fef9c3; /* Amarillo Pastel Claro */
+    color: #1e1b4b; 
+    border-radius: 20px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    position: relative;
+    overflow: hidden;
+    height: 220px; /* Altura de la carta cerrada */
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.card-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Cuando la carta se abre */
+.card-box.opened {
+    height: auto; /* Se expande dinámicamente según el contenido */
+    cursor: default;
+    transform: translateY(0);
+}
+
+/* Portada de la Carta (Sobre cerrado) */
+.card-cover {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #fef08a; /* Amarillo pastel oscuro */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    border: 3px dashed #eab308;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+}
+
+.card-cover .heart {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    animation: pulse 1.5s infinite;
+}
+
+.card-cover h2 {
+    font-size: 1.5rem;
+    color: #854d0e;
+}
+
+.card-cover span {
+    font-size: 0.9rem;
+    color: #a16207;
+    margin-top: 8px;
+}
+
+/* Animación de apertura: Se desliza hacia arriba */
+.card-box.opened .card-cover {
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+/* Contenido Interno de la Carta */
+.card-content {
+    padding: 25px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease-in-out 0.2s, visibility 0.4s ease-in-out 0.2s;
+}
+
+.card-box.opened .card-content {
+    opacity: 1;
+    visibility: visible;
+}
+
+.item-title {
+    font-size: 1.3rem;
+    color: #713f12;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Sistema Carrusel Deslizable por gestos nativos (Touch Swipe) */
+.carousel-container {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.carousel-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ocultar barras de scroll horribles */
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track { -ms-overflow-style: none; scrollbar-width: none; }
+
+.carousel-item {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-item img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.carousel-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #a16207;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.content-text-block p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #451a03;
+    text-align: center;
+}
+
+/* Ajustes de Iframe de Música (Spotify/YouTube) */
+.content-playlist-block iframe {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
