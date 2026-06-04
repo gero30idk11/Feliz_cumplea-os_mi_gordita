@@ -7,7 +7,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #2e1065, #581c87, #3b0764); /* Fondo Morado Premium */
+    background: linear-gradient(135deg, #2e1065, #581c87, #3b0764); 
     min-height: 100vh;
     padding: 40px 20px;
     color: #ffffff;
@@ -21,7 +21,7 @@ body {
 
 .header-container h1 {
     font-size: 2.5rem;
-    color: #fef08a; /* Amarillo pastel brillante */
+    color: #fef08a; 
     text-shadow: 0px 4px 10px rgba(0,0,0,0.3);
     margin-bottom: 10px;
 }
@@ -76,127 +76,67 @@ body {
     z-index: 5;
 }
 
-.card-container:hover .envelope {
-    transform: translateY(-5px);
-}
-
-.card-container.opened .envelope {
-    transform: translateY(0);
-    cursor: default;
-}
+.card-container:hover .envelope { transform: translateY(-5px); }
+.card-container.opened .envelope { transform: translateY(0); cursor: default; }
 
 .envelope-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background: #fef9c3; 
-    border-radius: 4px;
+    position: relative; width: 100%; height: 100%;
+    background: #fef9c3; border-radius: 4px;
 }
 
-/* Frentes del sobre */
 .envelope-front {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background: #fde047; 
     clip-path: polygon(0 100%, 0 0, 50% 55%, 100% 0, 100% 100%);
-    z-index: 4;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
+    z-index: 4; border-radius: 4px;
+    display: flex; justify-content: center; align-items: flex-end;
     padding-bottom: 15px;
 }
 
 .card-title-front {
-    color: #854d0e;
-    font-size: 1.2rem; /* Tamaño un poco menor para textos largos */
-    font-weight: bold;
-    z-index: 6;
-    text-align: center;
-    padding: 0 15px;
-    line-height: 1.2;
+    color: #854d0e; font-size: 1.2rem; font-weight: bold;
+    z-index: 6; text-align: center; padding: 0 15px; line-height: 1.2;
 }
 
-/* Solapa superior del sobre */
 .envelope-flap {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 60%;
+    position: absolute; top: 0; left: 0; right: 0; height: 60%;
     background: #fef08a; 
     clip-path: polygon(0 0, 100% 0, 50% 100%);
-    transform-origin: top;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 5;
-    display: flex;
-    justify-content: center;
-    padding-top: 15px;
+    transform-origin: top; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5; display: flex; justify-content: center; padding-top: 15px;
 }
 
-.heart-seal {
-    font-size: 2rem;
-    animation: pulse 1.5s infinite;
-    transition: opacity 0.3s;
-}
+.heart-seal { font-size: 2rem; animation: pulse 1.5s infinite; transition: opacity 0.3s; }
 
-/* --- LA CARTA INTERNA (CONTENIDO) --- */
+/* --- LA CARTA INTERNA --- */
 .letter {
-    position: absolute;
-    bottom: 10px; left: 10px; right: 10px;
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 20px;
-    z-index: 3; 
-    box-shadow: 0 0 15px rgba(0,0,0,0.15);
+    position: absolute; bottom: 10px; left: 10px; right: 10px;
+    background: #ffffff; border-radius: 8px; padding: 20px;
+    z-index: 3; box-shadow: 0 0 15px rgba(0,0,0,0.15);
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0;
-    max-height: 180px;
-    overflow: hidden;
-    height: fit-content; /* Permite que la carta se ajuste al tamaño exacto de la foto */
+    opacity: 0; max-height: 180px; overflow: hidden; height: fit-content;
 }
 
-/* --- ANIMACIÓN AL ABRIR --- */
-.card-container.opened {
-    margin-top: 280px; /* Da suficiente espacio para listas de música o imágenes altas */
-    margin-bottom: 60px;
-}
-
-.card-container.opened .envelope-flap {
-    transform: rotateX(180deg); 
-    z-index: 2; 
-}
-
-.card-container.opened .heart-seal {
-    opacity: 0; 
-}
-
+.card-container.opened { margin-top: 280px; margin-bottom: 60px; }
+.card-container.opened .envelope-flap { transform: rotateX(180deg); z-index: 2; }
+.card-container.opened .heart-seal { opacity: 0; }
 .card-container.opened .letter {
-    bottom: 130px; 
-    opacity: 1;
-    max-height: 900px; /* Límite muy alto para que la carta se expanda sin cortar nada */
-    z-index: 10; 
+    bottom: 130px; opacity: 1; max-height: 900px; z-index: 10;
     box-shadow: 0 15px 30px rgba(0,0,0,0.2);
 }
 
-/* --- CONTENIDO INTERNO --- */
+/* --- CONTENIDO INTERNO Y CARRUSEL --- */
 .item-title {
-    font-size: 1.2rem;
-    color: #713f12;
-    margin-bottom: 15px;
-    text-align: center;
-    font-weight: bold;
+    font-size: 1.2rem; color: #713f12; margin-bottom: 15px;
+    text-align: center; font-weight: bold;
 }
 
-.carousel-container {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-}
+.carousel-container { width: 100%; position: relative; overflow: hidden; }
 
 .carousel-track {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
+    display: flex; overflow-x: auto;
+    /* AJUSTE: Proximity y remoción de smooth hacen el toque táctil más natural */
+    scroll-snap-type: x proximity; 
     -webkit-overflow-scrolling: touch;
 }
 
@@ -204,47 +144,68 @@ body {
 .carousel-track { -ms-overflow-style: none; scrollbar-width: none; }
 
 .carousel-item {
-    flex: 0 0 100%;
-    scroll-snap-align: start;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    flex: 0 0 100%; scroll-snap-align: start;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 
 .carousel-item img {
-    max-width: 100%;
-    max-height: 350px;
-    height: auto; /* La imagen dicta su propia altura sin espacios vacíos */
-    border-radius: 8px;
-    object-fit: contain; 
+    max-width: 100%; max-height: 350px; height: auto;
+    border-radius: 8px; object-fit: contain; 
 }
 
 .carousel-hint {
-    text-align: center;
-    font-size: 0.8rem;
-    color: #a16207;
-    margin-top: 15px;
-    font-style: italic;
-    background: #fef9c3;
-    padding: 5px;
-    border-radius: 20px;
+    text-align: center; font-size: 0.8rem; color: #a16207;
+    margin-top: 15px; font-style: italic; background: #fef9c3;
+    padding: 5px; border-radius: 20px;
 }
 
-.content-text-block p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: #451a03;
-    text-align: center;
-}
+.content-text-block p { font-size: 1.1rem; line-height: 1.6; color: #451a03; text-align: center; }
 
-.content-playlist-block iframe {
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+/* --- DISEÑO DEL REPRODUCTOR (MINIATURA) --- */
+.media-placeholder {
+    width: 100%; height: 200px; border-radius: 12px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    color: white; text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+    position: relative; overflow: hidden;
 }
+.media-placeholder::before {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 1; /* Fondo oscuro para que el botón resalte */
+}
+.media-placeholder .play-btn {
+    font-size: 3.5rem; margin-bottom: 10px; z-index: 2;
+    transition: transform 0.2s;
+}
+.media-placeholder:hover .play-btn { transform: scale(1.1); }
+.media-placeholder span { font-size: 1.1rem; font-weight: bold; z-index: 2; }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
+/* --- VENTANA EMERGENTE (MODAL) --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
 }
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+.modal-content {
+    width: 90%; max-width: 500px;
+    background: #2e1065; padding: 15px; border-radius: 16px;
+    position: relative; transform: scale(0.9); transition: transform 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+.modal-overlay.active .modal-content { transform: scale(1); }
+
+.close-modal {
+    background: #ef4444; color: white; border: none;
+    padding: 8px 20px; border-radius: 20px;
+    margin-bottom: 15px; font-weight: bold; font-size: 1rem;
+    cursor: pointer; float: right; transition: background 0.2s;
+}
+.close-modal:hover { background: #dc2626; }
+
+#modal-body iframe { width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
