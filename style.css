@@ -1,250 +1,95 @@
 /* Estilos Generales y Reset */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
 body {
-    background: linear-gradient(135deg, #2e1065, #581c87, #3b0764); /* Fondo Morado Premium */
-    min-height: 100vh;
-    padding: 40px 20px;
-    color: #ffffff;
-    overflow-x: hidden;
+    background: linear-gradient(135deg, #2e1065, #581c87, #3b0764); 
+    min-height: 100vh; padding: 40px 20px; color: #ffffff; overflow-x: hidden;
 }
 
-.header-container {
-    text-align: center;
-    margin-bottom: 50px;
-}
+.header-container { text-align: center; margin-bottom: 50px; }
+.header-container h1 { font-size: 2.5rem; color: #fef08a; text-shadow: 0px 4px 10px rgba(0,0,0,0.3); margin-bottom: 10px; }
+.header-container p { font-size: 1.1rem; color: #e9d5ff; }
 
-.header-container h1 {
-    font-size: 2.5rem;
-    color: #fef08a; /* Amarillo pastel brillante */
-    text-shadow: 0px 4px 10px rgba(0,0,0,0.3);
-    margin-bottom: 10px;
-}
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+.loading { text-align: center; grid-column: 1 / -1; font-size: 1.2rem; color: #fef08a; }
 
-.header-container p {
-    font-size: 1.1rem;
-    color: #e9d5ff;
-}
+/* --- DISEÑO DEL SOBRE --- */
+.card-container { position: relative; width: 100%; min-height: 240px; display: flex; align-items: flex-end; margin-bottom: 20px; transition: margin 0.8s ease; }
+.envelope { position: relative; width: 100%; height: 220px; background: repeating-linear-gradient(-45deg, #d32f2f 0, #d32f2f 12px, #ffffff 12px, #ffffff 24px, #00695c 24px, #00695c 36px, #ffffff 36px, #ffffff 48px); border-radius: 8px; padding: 8px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.3); transition: transform 0.3s; z-index: 5; }
+.card-container:hover .envelope { transform: translateY(-5px); }
+.card-container.opened .envelope { transform: translateY(0); cursor: default; }
+.envelope-inner { position: relative; width: 100%; height: 100%; background: #fef9c3; border-radius: 4px; }
 
-.cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+.envelope-front { position: absolute; inset: 0; background: #fde047; clip-path: polygon(0 100%, 0 0, 50% 55%, 100% 0, 100% 100%); z-index: 4; border-radius: 4px; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 15px; }
+.card-title-front { color: #854d0e; font-size: 1.2rem; font-weight: bold; z-index: 6; text-align: center; padding: 0 15px; line-height: 1.2; }
+.envelope-flap { position: absolute; top: 0; left: 0; right: 0; height: 60%; background: #fef08a; clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; display: flex; justify-content: center; padding-top: 15px; }
+.heart-seal { font-size: 2rem; animation: pulse 1.5s infinite; transition: opacity 0.3s; }
 
-.loading {
-    text-align: center;
-    grid-column: 1 / -1;
-    font-size: 1.2rem;
-    color: #fef08a;
-}
+/* --- CARTA INTERNA --- */
+.letter { position: absolute; bottom: 10px; left: 10px; right: 10px; background: #ffffff; border-radius: 8px; padding: 20px; z-index: 3; box-shadow: 0 0 15px rgba(0,0,0,0.15); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; max-height: 180px; overflow: hidden; height: fit-content; }
+.card-container.opened { margin-top: 280px; margin-bottom: 60px; }
+.card-container.opened .envelope-flap { transform: rotateX(180deg); z-index: 2; }
+.card-container.opened .heart-seal { opacity: 0; }
+.card-container.opened .letter { bottom: 130px; opacity: 1; max-height: 900px; z-index: 10; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
 
-/* --- DISEÑO DEL SOBRE ESTILO CORREO AÉREO --- */
-.card-container {
-    position: relative;
-    width: 100%;
-    min-height: 240px;
-    display: flex;
-    align-items: flex-end;
-    margin-bottom: 20px;
-    transition: margin 0.8s ease; 
-}
-
-.envelope {
-    position: relative;
-    width: 100%;
-    height: 220px;
-    background: repeating-linear-gradient(
-        -45deg,
-        #d32f2f 0, #d32f2f 12px,
-        #ffffff 12px, #ffffff 24px,
-        #00695c 24px, #00695c 36px,
-        #ffffff 36px, #ffffff 48px
-    );
-    border-radius: 8px;
-    padding: 8px; 
-    cursor: pointer;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    transition: transform 0.3s;
-    z-index: 5;
-}
-
-.card-container:hover .envelope {
-    transform: translateY(-5px);
-}
-
-.card-container.opened .envelope {
-    transform: translateY(0);
-    cursor: default;
-}
-
-.envelope-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background: #fef9c3; 
-    border-radius: 4px;
-}
-
-/* Frentes del sobre */
-.envelope-front {
-    position: absolute;
-    inset: 0;
-    background: #fde047; 
-    clip-path: polygon(0 100%, 0 0, 50% 55%, 100% 0, 100% 100%);
-    z-index: 4;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    padding-bottom: 15px;
-}
-
-.card-title-front {
-    color: #854d0e;
-    font-size: 1.2rem; /* Tamaño un poco menor para textos largos */
-    font-weight: bold;
-    z-index: 6;
-    text-align: center;
-    padding: 0 15px;
-    line-height: 1.2;
-}
-
-/* Solapa superior del sobre */
-.envelope-flap {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 60%;
-    background: #fef08a; 
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-    transform-origin: top;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 5;
-    display: flex;
-    justify-content: center;
-    padding-top: 15px;
-}
-
-.heart-seal {
-    font-size: 2rem;
-    animation: pulse 1.5s infinite;
-    transition: opacity 0.3s;
-}
-
-/* --- LA CARTA INTERNA (CONTENIDO) --- */
-.letter {
-    position: absolute;
-    bottom: 10px; left: 10px; right: 10px;
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 20px;
-    z-index: 3; 
-    box-shadow: 0 0 15px rgba(0,0,0,0.15);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0;
-    max-height: 180px;
-    overflow: hidden;
-    height: fit-content; /* Permite que la carta se ajuste al tamaño exacto de la foto */
-}
-
-/* --- ANIMACIÓN AL ABRIR --- */
-.card-container.opened {
-    margin-top: 280px; /* Da suficiente espacio para listas de música o imágenes altas */
-    margin-bottom: 60px;
-}
-
-.card-container.opened .envelope-flap {
-    transform: rotateX(180deg); 
-    z-index: 2; 
-}
-
-.card-container.opened .heart-seal {
-    opacity: 0; 
-}
-
-.card-container.opened .letter {
-    bottom: 130px; 
-    opacity: 1;
-    max-height: 900px; /* Límite muy alto para que la carta se expanda sin cortar nada */
-    z-index: 10; 
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-}
-
-/* --- CONTENIDO INTERNO --- */
-.item-title {
-    font-size: 1.2rem;
-    color: #713f12;
-    margin-bottom: 15px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.carousel-container {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-}
-
-.carousel-track {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-}
-
+.item-title { font-size: 1.2rem; color: #713f12; margin-bottom: 15px; text-align: center; font-weight: bold; }
+.carousel-container { width: 100%; position: relative; overflow: hidden; }
+.carousel-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
 .carousel-track::-webkit-scrollbar { display: none; }
 .carousel-track { -ms-overflow-style: none; scrollbar-width: none; }
+.carousel-item { flex: 0 0 100%; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.carousel-item img { max-width: 100%; max-height: 350px; height: auto; border-radius: 8px; object-fit: contain; }
+.content-text-block p { font-size: 1.1rem; line-height: 1.6; color: #451a03; text-align: center; }
 
-.carousel-item {
-    flex: 0 0 100%;
-    scroll-snap-align: start;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.carousel-item img {
-    max-width: 100%;
-    max-height: 350px;
-    height: auto; /* La imagen dicta su propia altura sin espacios vacíos */
+/* --- NUEVO: ESTÉTICA DE LISTA DE SPOTIFY --- */
+.spotify-playlist-container {
+    width: 100%;
+    max-height: 300px; /* Suficiente para mostrar ~4 canciones antes de deslizar hacia abajo */
+    overflow-y: auto;
+    padding-right: 5px;
     border-radius: 8px;
-    object-fit: contain; 
+    background-color: #121212; /* Fondo de lista clásico oscuro */
+    padding: 10px;
 }
+.spotify-playlist-container::-webkit-scrollbar { width: 6px; }
+.spotify-playlist-container::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
 
-.carousel-hint {
-    text-align: center;
-    font-size: 0.8rem;
-    color: #a16207;
-    margin-top: 15px;
-    font-style: italic;
-    background: #fef9c3;
-    padding: 5px;
-    border-radius: 20px;
+.spotify-track {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
+.spotify-track:hover { background-color: #2a2a2a; }
+.track-thumb { width: 48px; height: 48px; border-radius: 4px; object-fit: cover; margin-right: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+.track-info { flex-grow: 1; overflow: hidden; text-align: left; }
+.track-info h4 { color: #ffffff; font-size: 0.95rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.track-info p { color: #b3b3b3; font-size: 0.8rem; margin: 0; display: flex; align-items: center; }
+.track-info p::before { content: 'YouTube'; display: inline-block; background: #ff0000; color: white; font-size: 0.6rem; padding: 2px 4px; border-radius: 3px; margin-right: 6px; font-weight: bold; letter-spacing: 0.5px;}
+.track-play { color: #1db954; font-size: 1.2rem; margin-left: 10px; opacity: 0.8; }
+.spotify-track:hover .track-play { opacity: 1; transform: scale(1.1); }
 
-.content-text-block p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: #451a03;
-    text-align: center;
+/* --- NUEVO: VENTANA EMERGENTE (MODAL) --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center;
+    z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
 }
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-content {
+    width: 90%; max-width: 500px; background: #181818; padding: 20px; border-radius: 12px;
+    position: relative; transform: scale(0.9); transition: transform 0.3s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+.modal-overlay.active .modal-content { transform: scale(1); }
+.close-modal {
+    position: absolute; top: -45px; right: 0;
+    background: transparent; color: #b3b3b3; border: none; font-size: 2rem; cursor: pointer; transition: color 0.2s;
+}
+.close-modal:hover { color: #ffffff; }
+#modal-body iframe { width: 100%; height: 260px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: none; }
 
-.content-playlist-block iframe {
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
-}
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
