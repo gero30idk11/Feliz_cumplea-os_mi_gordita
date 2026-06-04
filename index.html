@@ -9,11 +9,22 @@
 <body>
 
     <div class="header-container">
-        <h1>¡Feliz Cumpleaños!</h1>
+        <h1>¡Feliz Cumpleaños! 🎂✨</h1>
     </div>
 
+    <!-- Contenedor dinámico de Cartas -->
     <div id="cards-grid" class="cards-grid">
         <div class="loading">Recogiendo las cartas del buzón... 💌</div>
+    </div>
+
+    <!-- NUEVO: Ventana Emergente (Modal) para el Reproductor -->
+    <div id="video-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">✖</button>
+            <div id="modal-body">
+                <!-- Aquí se inyectará el video automáticamente -->
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
