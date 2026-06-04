@@ -147,22 +147,37 @@ async function loadCards() {
             if (!cardsMap.has(name)) cardsMap.set(name, []);
             cardsMap.get(name).push({
                 tipo:          row[1] || '',
-                titulo:        row[2] || '',   // col C — título de la carta
-                tituloCancion: row[3] || '',   // col D — nombre de la canción ← NUEVO
-                url:           row[4] || ''    // col E — URL               ← movida
+                titulo:        row[2] || '',
+                tituloCancion: row[3] || '',
+                url:           row[4] || ''
             });
         });
 
         grid.innerHTML = '';
 
         cardsMap.forEach((items, cardName) => {
-            const isPlaylist = items.some(i => i.tipo.toLowerCase().trim() === 'playlist');
+            const tipos = items.map(i => i.tipo.toLowerCase().trim());
+            const isPlaylist = tipos.some(t => t === 'playlist');
+            const isSpotify  = tipos.some(t => t === 'spotify');
             const cardBox = document.createElement('div');
             cardBox.className = 'card-container';
 
             let contentHTML = '';
 
-            if (isPlaylist) {
+            if (isSpotify) {
+                const first     = items[0];
+                const cardTitle = first.titulo || cardName;
+                const url       = first.url.trim();
+                contentHTML = `
+                    <div class="spotify-link-card">
+                        <div class="spotify-link-icon">🎧</div>
+                        <h3 class="spotify-link-title">${cardTitle}</h3>
+                        <p class="spotify-link-desc">Te compartí una playlist especial.<br>Guárdala en tu Spotify 💚</p>
+                        <a class="spotify-link-btn" href="${url}" target="_blank" rel="noopener noreferrer">
+                            Abrir en Spotify
+                        </a>
+                    </div>`;
+            } else if (isPlaylist) {
                 const cardTitle = items.find(i => i.titulo)?.titulo || cardName;
                 contentHTML = `
                     <h3 class="item-title playlist-title">
