@@ -114,8 +114,29 @@ const modal     = document.getElementById('video-modal');
 const modalBody = document.getElementById('modal-body');
 const closeBtnEl = document.getElementById('close-modal');
 
+function getVideoBg() {
+    return document.querySelector('.video-bg iframe');
+}
+
+function muteVideoBg() {
+    const iframe = getVideoBg();
+    if (!iframe) return;
+    // Recargar el src añadiendo mute=1
+    const src = iframe.src;
+    if (!src.includes('mute=1')) {
+        iframe.src = src.replace('mute=0', 'mute=1');
+    }
+}
+
+function unmuteVideoBg() {
+    const iframe = getVideoBg();
+    if (!iframe) return;
+    iframe.src = iframe.src.replace('mute=1', 'mute=0');
+}
+
 function openModal(embedUrl, platform) {
     if (platform === 'link') { window.open(embedUrl, '_blank'); return; }
+    muteVideoBg();
     modalBody.innerHTML = `<iframe src="${embedUrl}"
         width="100%" height="280" frameborder="0" allowfullscreen
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
@@ -126,6 +147,7 @@ function openModal(embedUrl, platform) {
 function closeModalFn() {
     modal.classList.remove('active');
     modalBody.innerHTML = '';
+    unmuteVideoBg();
 }
 
 closeBtnEl.addEventListener('click', closeModalFn);
