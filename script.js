@@ -115,23 +115,17 @@ const modalBody = document.getElementById('modal-body');
 const closeBtnEl = document.getElementById('close-modal');
 
 function getVideoBg() {
-    return document.querySelector('.video-bg iframe');
+    return document.getElementById('bg-video');
 }
 
 function muteVideoBg() {
-    const iframe = getVideoBg();
-    if (!iframe) return;
-    // Recargar el src añadiendo mute=1
-    const src = iframe.src;
-    if (!src.includes('mute=1')) {
-        iframe.src = src.replace('mute=0', 'mute=1');
-    }
+    const v = getVideoBg();
+    if (v) v.muted = true;
 }
 
 function unmuteVideoBg() {
-    const iframe = getVideoBg();
-    if (!iframe) return;
-    iframe.src = iframe.src.replace('mute=1', 'mute=0');
+    const v = getVideoBg();
+    if (v) v.muted = false;
 }
 
 function openModal(embedUrl, platform) {
