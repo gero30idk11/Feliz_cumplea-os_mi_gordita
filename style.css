@@ -363,3 +363,35 @@ body {
 .spotify-link-btn:active {
     transform: scale(.98);
 }
+
+/* ══════════════════════════════════════
+   VIDEO DE FONDO
+   ══════════════════════════════════════ */
+.video-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    background: #0d0520;
+}
+
+.video-bg video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100vw;
+    min-height: 100vh;
+    width: auto;
+    height: auto;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+/* Capa semitransparente para que el contenido sea legible */
+.video-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(10, 3, 30, 0.55);
+}
