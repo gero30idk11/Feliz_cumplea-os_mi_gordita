@@ -118,6 +118,18 @@ function getVideoBg() {
     return document.getElementById('bg-video');
 }
 
+// Estado: el usuario quiere sonido o no
+let userWantsSound = false;
+
+function toggleSound() {
+    const v = getVideoBg();
+    const btn = document.getElementById('sound-btn');
+    if (!v) return;
+    userWantsSound = !userWantsSound;
+    v.muted = !userWantsSound;
+    btn.textContent = userWantsSound ? '🔊' : '🔇';
+}
+
 function muteVideoBg() {
     const v = getVideoBg();
     if (v) v.muted = true;
@@ -125,7 +137,8 @@ function muteVideoBg() {
 
 function unmuteVideoBg() {
     const v = getVideoBg();
-    if (v) v.muted = false;
+    // Solo desmutea si el usuario eligió tener sonido
+    if (v && userWantsSound) v.muted = false;
 }
 
 function openModal(embedUrl, platform) {
