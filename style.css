@@ -395,3 +395,25 @@ body {
     z-index: -1;
     background: rgba(10, 3, 30, 0.55);
 }
+
+/* ── Botón de sonido ── */
+#sound-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.25);
+    color: white;
+    font-size: 1.4rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#sound-btn:hover { background: rgba(255,255,255,.25); transform: scale(1.08); }
