@@ -18,16 +18,6 @@ function animateCards() {
     });
 }
 
-/* ══ 3. CONTADOR ══ */
-let totalCards = 0, openedCards = 0;
-function updateCounter() {
-    const el = document.getElementById('card-counter');
-    if (!el || totalCards === 0) return;
-    if (openedCards === 0)           el.textContent = `${totalCards} sorpresas te esperan 💜`;
-    else if (openedCards === totalCards) el.textContent = `¡Abriste todas las sorpresas! 🎉`;
-    else el.textContent = `Abriste ${openedCards} de ${totalCards} sorpresas 💜`;
-}
-
 /* ══ 9. VIBRACIÓN HÁPTICA ══ */
 function haptic() {
     if (navigator.vibrate) navigator.vibrate([30, 20, 60]);
@@ -213,8 +203,6 @@ async function loadCards() {
         });
 
         grid.innerHTML = '';
-        totalCards = cardsMap.size;
-        updateCounter();
 
         cardsMap.forEach((items, cardName) => {
             const tipos = items.map(i => i.tipo.toLowerCase().trim());
@@ -277,8 +265,6 @@ async function loadCards() {
                 });
                 cardBox.classList.add('opened');
                 haptic();
-                openedCards++;
-                updateCounter();
             });
 
             // Click en track → modal
