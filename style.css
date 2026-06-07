@@ -537,3 +537,20 @@ body {
   .cards-grid { grid-template-columns: 1fr; }
   .final-card { padding: 36px 22px; }
 }
+
+/* ── Múltiples botones en carta spotify ── */
+.playlist-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  align-items: center;
+  margin-top: 4px;
+}
+.spotify-link-btn.yt-btn {
+  background: #ff0000;
+  box-shadow: 0 4px 18px rgba(255,0,0,.35);
+}
+.spotify-link-btn.yt-btn:hover {
+  background: #cc0000;
+}
