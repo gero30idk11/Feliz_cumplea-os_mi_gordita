@@ -3,6 +3,36 @@ const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRp80A5vVYeOZDcB
 // ESTRUCTURA DEL SHEET:
 // A: Carta | B: Tipo | C: Titulo (carta) | D: Titulo cancion | E: Url
 
+/* ══ 1. PANTALLA DE BIENVENIDA ══ */
+function enterPage() {
+    document.getElementById('welcome-screen').classList.add('hidden');
+    document.getElementById('main-content').classList.add('visible');
+    // Las cartas ya están en el DOM, solo las animamos
+    setTimeout(animateCards, 300);
+}
+
+/* ══ 5. ANIMACIÓN ENTRADA DE CARTAS ══ */
+function animateCards() {
+    document.querySelectorAll('.card-container').forEach((card, i) => {
+        setTimeout(() => card.classList.add('card-visible'), i * 150);
+    });
+}
+
+/* ══ 3. CONTADOR ══ */
+let totalCards = 0, openedCards = 0;
+function updateCounter() {
+    const el = document.getElementById('card-counter');
+    if (!el || totalCards === 0) return;
+    if (openedCards === 0)           el.textContent = `${totalCards} sorpresas te esperan 💜`;
+    else if (openedCards === totalCards) el.textContent = `¡Abriste todas las sorpresas! 🎉`;
+    else el.textContent = `Abriste ${openedCards} de ${totalCards} sorpresas 💜`;
+}
+
+/* ══ 9. VIBRACIÓN HÁPTICA ══ */
+function haptic() {
+    if (navigator.vibrate) navigator.vibrate([30, 20, 60]);
+}
+
 function parseCSV(text) {
     const lines = text.split(/\r?\n/);
     const rows = [];
@@ -183,6 +213,8 @@ async function loadCards() {
         });
 
         grid.innerHTML = '';
+        totalCards = cardsMap.size;
+        updateCounter();
 
         cardsMap.forEach((items, cardName) => {
             const tipos = items.map(i => i.tipo.toLowerCase().trim());
@@ -244,6 +276,9 @@ async function loadCards() {
                     c.querySelectorAll('iframe').forEach(f => { f.src = ''; });
                 });
                 cardBox.classList.add('opened');
+                haptic();
+                openedCards++;
+                updateCounter();
             });
 
             // Click en track → modal
