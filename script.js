@@ -356,12 +356,32 @@ async function loadCards() {
       let contentHTML = '';
 
       if (isSpotify) {
-        const first = items[0];
+        const cardTitle = items.find(i=>i.titulo)?.titulo || cardName;
+
+        // Construir botones según la URL de cada fila
+        const buttons = items.map(item => {
+          const url   = item.url.trim();
+          const isYT  = url.includes('youtube.com') || url.includes('youtu.be');
+          const isSP  = url.includes('spotify.com');
+          if (isYT) return `
+            <a class="spotify-link-btn yt-btn" href="${url}" target="_blank" rel="noopener noreferrer">
+              ▶ Abrir en YouTube
+            </a>`;
+          if (isSP) return `
+            <a class="spotify-link-btn" href="${url}" target="_blank" rel="noopener noreferrer">
+              ♫ Abrir en Spotify
+            </a>`;
+          return `
+            <a class="spotify-link-btn" href="${url}" target="_blank" rel="noopener noreferrer">
+              🔗 Abrir enlace
+            </a>`;
+        }).join('');
+
         contentHTML = `<div class="spotify-link-card">
           <div class="spotify-link-icon">🎧</div>
-          <h3 class="spotify-link-title">${first.titulo||cardName}</h3>
-          <p class="spotify-link-desc">Te compartí una playlist especial.<br>Guárdala en tu Spotify 💚</p>
-          <a class="spotify-link-btn" href="${first.url.trim()}" target="_blank" rel="noopener noreferrer">Abrir en Spotify</a>
+          <h3 class="spotify-link-title">${cardTitle}</h3>
+          <p class="spotify-link-desc">Te compartí una playlist especial.<br>Guárdala y escúchala cuando me extrañes 💚</p>
+          <div class="playlist-btns">${buttons}</div>
         </div>`;
       } else if (isPlaylist) {
         const cardTitle = items.find(i=>i.titulo)?.titulo || cardName;
