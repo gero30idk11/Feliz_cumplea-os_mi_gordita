@@ -1,553 +1,302 @@
-/* ══════════════════════════════════════
-   Reset y base
-   ══════════════════════════════════════ */
-*, *::before, *::after {
-    box-sizing: border-box; margin: 0; padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRp80A5vVYeOZDcBrDCTsoBZDC7ZfyvhIgRJ4InkcbgcsJ90muDVhthWGuDsElJ677VlD-mYTjfRecZ/pub?output=csv';
+
+// ESTRUCTURA DEL SHEET:
+// A: Carta | B: Tipo | C: Titulo (carta) | D: Titulo cancion | E: Url
+
+/* ══ 1. PANTALLA DE BIENVENIDA ══ */
+function enterPage() {
+    document.getElementById('welcome-screen').classList.add('hidden');
+    document.getElementById('main-content').classList.add('visible');
+    setTimeout(animateCards, 400);
 }
 
-body {
-    background: linear-gradient(135deg, #2e1065, #581c87, #3b0764);
-    min-height: 100vh;
-    padding: 40px 20px 80px;
-    color: #ffffff;
-    overflow-x: hidden;
+/* ══ 5. ANIMACIÓN ENTRADA DE CARTAS ══ */
+function animateCards() {
+    document.querySelectorAll('.card-container').forEach((card, i) => {
+        setTimeout(() => card.classList.add('card-visible'), i * 150);
+    });
 }
 
-/* ══════════════════════════════════════
-   Header
-   ══════════════════════════════════════ */
-.header-container { text-align: center; margin-bottom: 50px; }
-.header-container h1 {
-    font-size: 2.5rem; color: #fef08a;
-    text-shadow: 0 4px 10px rgba(0,0,0,.3); margin-bottom: 10px;
-}
-.header-container p { font-size: 1.1rem; color: #e9d5ff; }
-
-/* ══════════════════════════════════════
-   Grid de cartas
-   ══════════════════════════════════════ */
-.cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-.loading { text-align: center; grid-column: 1/-1; font-size: 1.2rem; color: #fef08a; }
-
-/* ══════════════════════════════════════
-   Sobre
-   ══════════════════════════════════════ */
-.card-container {
-    position: relative;
-    width: 100%;
-    min-height: 240px;
-    display: flex;
-    align-items: flex-end;
-    margin-bottom: 20px;
-    transition: margin 0.8s ease;
+/* ══ 3. CONTADOR ══ */
+let totalCards = 0, openedCards = 0;
+function updateCounter() {
+    const el = document.getElementById('card-counter');
+    if (!el || totalCards === 0) return;
+    if (openedCards === 0)           el.textContent = `${totalCards} sorpresas te esperan 💜`;
+    else if (openedCards === totalCards) el.textContent = `¡Abriste todas las sorpresas! 🎉`;
+    else el.textContent = `Abriste ${openedCards} de ${totalCards} sorpresas 💜`;
 }
 
-.envelope {
-    position: relative;
-    width: 100%;
-    height: 220px;
-    background: repeating-linear-gradient(
-        -45deg,
-        #d32f2f 0, #d32f2f 12px,
-        #ffffff 12px, #ffffff 24px,
-        #00695c 24px, #00695c 36px,
-        #ffffff 36px, #ffffff 48px
-    );
-    border-radius: 8px;
-    padding: 8px;
-    cursor: pointer;
-    box-shadow: 0 10px 25px rgba(0,0,0,.3);
-    transition: transform .3s;
-    z-index: 5;
-}
-.card-container:hover .envelope { transform: translateY(-5px); }
-.card-container.opened .envelope { transform: translateY(0); cursor: default; }
-
-.envelope-inner {
-    position: relative;
-    width: 100%; height: 100%;
-    background: #fef9c3;
-    border-radius: 4px;
+/* ══ 9. VIBRACIÓN HÁPTICA ══ */
+function haptic() {
+    if (navigator.vibrate) navigator.vibrate([30, 20, 60]);
 }
 
-/* Parte delantera del sobre */
-.envelope-front {
-    position: absolute; inset: 0;
-    background: #fde047;
-    clip-path: polygon(0 100%, 0 0, 50% 55%, 100% 0, 100% 100%);
-    z-index: 4; border-radius: 4px;
-    display: flex; justify-content: center; align-items: flex-end;
-    padding-bottom: 15px;
-}
-.card-title-front {
-    color: #854d0e; font-size: 1.2rem; font-weight: bold;
-    z-index: 6; text-align: center; padding: 0 15px; line-height: 1.2;
-}
-
-/* Solapa */
-.envelope-flap {
-    position: absolute; top: 0; left: 0; right: 0; height: 60%;
-    background: #fef08a;
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-    transform-origin: top;
-    transition: transform 0.6s cubic-bezier(.4,0,.2,1);
-    z-index: 5;
-    display: flex; justify-content: center; padding-top: 15px;
-}
-.heart-seal { font-size: 2rem; animation: pulse 1.5s infinite; transition: opacity .3s; }
-
-/* ══════════════════════════════════════
-   Carta interior
-   ══════════════════════════════════════ */
-.letter {
-    position: absolute;
-    bottom: 10px; left: 10px; right: 10px;
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 16px;
-    z-index: 3;
-    box-shadow: 0 0 15px rgba(0,0,0,.15);
-    transition: all 0.8s cubic-bezier(.4,0,.2,1);
-    opacity: 0;
-    max-height: 180px;
-    overflow: hidden;
+function parseCSV(text) {
+    const lines = text.split(/\r?\n/);
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        const arr = [];
+        let inQuotes = false, item = '';
+        for (let j = 0; j < line.length; j++) {
+            const ch = line[j];
+            if (ch === '"') { inQuotes = !inQuotes; continue; }
+            if (ch === ',' && !inQuotes) { arr.push(item.trim()); item = ''; continue; }
+            item += ch;
+        }
+        arr.push(item.trim());
+        rows.push(arr);
+    }
+    return rows;
 }
 
-/* Estado abierto */
-.card-container.opened { margin-top: 280px; margin-bottom: 60px; }
-.card-container.opened .envelope-flap { transform: rotateX(180deg); z-index: 2; }
-.card-container.opened .heart-seal { opacity: 0; }
-.card-container.opened .letter {
-    bottom: 130px;
-    opacity: 1;
-    max-height: 900px;
-    z-index: 10;
-    box-shadow: 0 15px 30px rgba(0,0,0,.2);
-    overflow: visible; /* Para que la playlist pueda scrollear internamente */
+function fixDriveImageLink(url) {
+    if (!url) return '';
+    const clean = url.replace(/"/g, '').trim();
+    const match = clean.match(/(?:file\/d\/|id=)([a-zA-Z0-9_-]+)/);
+    return match ? `https://lh3.googleusercontent.com/d/${match[1]}` : clean;
 }
 
-.item-title {
-    font-size: 1.1rem; color: #713f12;
-    margin-bottom: 12px; text-align: center; font-weight: bold;
+function getYouTubeId(url) {
+    const clean = url.replace(/"/g, '').trim();
+    const m = clean.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : null;
 }
 
-/* ══════════════════════════════════════
-   Carousel imágenes
-   ══════════════════════════════════════ */
-.carousel-container { width: 100%; overflow: hidden; }
-.carousel-track {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
-.carousel-track::-webkit-scrollbar { display: none; }
-.carousel-item {
-    flex: 0 0 100%;
-    scroll-snap-align: start;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-}
-.carousel-item img {
-    max-width: 100%; max-height: 320px;
-    border-radius: 8px; object-fit: contain;
-}
-.content-text-block p { font-size: 1rem; line-height: 1.6; color: #451a03; text-align: center; }
-.carousel-hint {
-    text-align: center; font-size: .78rem;
-    color: #92400e; margin-top: 8px; opacity: .75;
+function getSpotifyEmbed(url) {
+    const clean = url.replace(/"/g, '').trim();
+    const m = clean.match(/spotify\.com\/(track|playlist|album)\/([a-zA-Z0-9]+)/);
+    return m ? `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator&theme=0` : null;
 }
 
-/* ══════════════════════════════════════
-   PLAYLIST ESTILO SPOTIFY
-   ══════════════════════════════════════ */
-.playlist-title {
-    display: flex; align-items: center; gap: 8px;
-    color: #1e1b4b; font-size: 1rem; margin-bottom: 10px;
-}
-.playlist-icon { font-size: 1.2rem; }
-
-.sp-playlist {
-    background: #121212;
-    border-radius: 10px;
-    overflow-y: auto;
-    max-height: 320px;       /* scroll interno */
-    padding: 8px 6px;
-
-    /* Scrollbar estilo Spotify */
-    scrollbar-width: thin;
-    scrollbar-color: #535353 transparent;
-}
-.sp-playlist::-webkit-scrollbar { width: 5px; }
-.sp-playlist::-webkit-scrollbar-thumb { background: #535353; border-radius: 10px; }
-.sp-playlist::-webkit-scrollbar-track { background: transparent; }
-
-/* Fila de track */
-.sp-track {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background .18s;
-    user-select: none;
-}
-.sp-track:hover { background: #2a2a2a; }
-.sp-track:active { background: #333; }
-
-/* Número */
-.sp-track-num {
-    width: 18px; text-align: center;
-    font-size: .78rem; color: #b3b3b3;
-    flex-shrink: 0;
+function ytThumb(id) {
+    return `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
 }
 
-/* Thumbnail */
-.sp-track-thumb {
-    width: 44px; height: 44px;
-    border-radius: 4px;
-    object-fit: cover;
-    flex-shrink: 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,.5);
-    background: #282828;
+function createItemHTML(item) {
+    const tipo = (item.tipo || '').toLowerCase().trim();
+    const tituloHtml = item.titulo ? `<h3 class="item-title">${item.titulo}</h3>` : '';
+
+    if (tipo === 'texto') {
+        return `<div class="carousel-item">
+            <div class="content-text-block">${tituloHtml}<p>${item.url.replace(/"/g,'')}</p></div>
+        </div>`;
+    }
+    if (tipo === 'imagen') {
+        const src = fixDriveImageLink(item.url);
+        return `<div class="carousel-item">
+            <div class="content-image-block">${tituloHtml}
+                <img src="${src}" alt="${item.titulo||'Imagen'}" loading="lazy">
+            </div>
+        </div>`;
+    }
+    return '';
 }
 
-/* Info */
-.sp-track-info {
-    flex: 1;
-    min-width: 0;
-    display: flex; flex-direction: column; gap: 3px;
-}
-.sp-track-name {
-    color: #ffffff;
-    font-size: .88rem; font-weight: 500;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.sp-track-platform {
-    font-size: .7rem; font-weight: 600;
-    padding: 2px 6px; border-radius: 3px;
-    display: inline-block; width: fit-content;
-}
-.sp-track-platform.youtube { background: rgba(255,0,0,.2); color: #ff6b6b; }
-.sp-track-platform.spotify { background: rgba(29,185,84,.2); color: #1db954; }
-.sp-track-platform.link    { background: rgba(196,181,253,.15); color: #c4b5fd; }
+function buildPlaylistHTML(items) {
+    const tracks = items.map((item, idx) => {
+        const clean     = item.url.replace(/"/g,'').trim();
+        const ytId      = getYouTubeId(clean);
+        const spEmbed   = getSpotifyEmbed(clean);
 
-/* Botón play */
-.sp-track-play {
-    color: #1db954; font-size: 1rem;
-    flex-shrink: 0; opacity: 0;
-    transition: opacity .15s;
-}
-.sp-track:hover .sp-track-play { opacity: 1; }
+        // ← usa item.tituloCancion (col D) como nombre de la canción
+        const trackName = item.tituloCancion || item.titulo || `Canción ${idx + 1}`;
 
-/* Separador sutil entre tracks */
-.sp-track + .sp-track {
-    border-top: 1px solid rgba(255,255,255,.04);
-}
+        let thumb = '', platform = '', embedUrl = '';
 
-/* ══════════════════════════════════════
-   Modal reproductor
-   ══════════════════════════════════════ */
-.modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.88);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 9999;
-    opacity: 0; pointer-events: none;
-    transition: opacity .3s;
-}
-.modal-overlay.active { opacity: 1; pointer-events: auto; }
+        if (ytId) {
+            thumb    = ytThumb(ytId);
+            platform = 'youtube';
+            embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+        } else if (spEmbed) {
+            thumb    = 'https://i.imgur.com/6gY9xgW.png';
+            platform = 'spotify';
+            embedUrl = spEmbed;
+        } else {
+            thumb    = 'https://i.imgur.com/6gY9xgW.png';
+            platform = 'link';
+            embedUrl = clean;
+        }
 
-.modal-content {
-    width: 90%; max-width: 500px;
-    background: #181818;
-    padding: 20px; border-radius: 14px;
-    position: relative;
-    transform: scale(.9);
-    transition: transform .3s;
-    box-shadow: 0 20px 60px rgba(0,0,0,.6);
-}
-.modal-overlay.active .modal-content { transform: scale(1); }
+        return `
+        <div class="sp-track" data-embed="${embedUrl}" data-platform="${platform}">
+            <span class="sp-track-num">${idx + 1}</span>
+            <img class="sp-track-thumb" src="${thumb}" alt="" loading="lazy"
+                 onerror="this.src='https://i.imgur.com/6gY9xgW.png'">
+            <div class="sp-track-info">
+                <span class="sp-track-name">${trackName}</span>
+                <span class="sp-track-platform ${platform}">
+                    ${platform === 'youtube' ? '▶ YouTube' : platform === 'spotify' ? '♫ Spotify' : '🔗 Link'}
+                </span>
+            </div>
+            <span class="sp-track-play">▶</span>
+        </div>`;
+    });
 
-.close-modal {
-    position: absolute; top: -42px; right: 0;
-    background: transparent; color: #b3b3b3;
-    border: none; font-size: 1.8rem; cursor: pointer;
-    transition: color .2s;
-}
-.close-modal:hover { color: #fff; }
-
-#modal-body iframe {
-    width: 100%; height: 260px;
-    border-radius: 10px; border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,.4);
-    display: block;
+    return `<div class="sp-playlist">${tracks.join('')}</div>`;
 }
 
-/* ══════════════════════════════════════
-   Animaciones
-   ══════════════════════════════════════ */
-@keyframes pulse {
-    0%   { transform: scale(1); }
-    50%  { transform: scale(1.15); }
-    100% { transform: scale(1); }
+/* ── Modal ── */
+const modal     = document.getElementById('video-modal');
+const modalBody = document.getElementById('modal-body');
+const closeBtnEl = document.getElementById('close-modal');
+
+function getVideoBg() {
+    return document.getElementById('bg-video');
 }
 
-/* ══════════════════════════════════════
-   Responsive
-   ══════════════════════════════════════ */
-@media (max-width: 480px) {
-    .header-container h1 { font-size: 1.8rem; }
-    .cards-grid { grid-template-columns: 1fr; }
+// Estado: el usuario quiere sonido o no
+let userWantsSound = false;
+
+function toggleSound() {
+    const v = getVideoBg();
+    const btn = document.getElementById('sound-btn');
+    if (!v) return;
+    userWantsSound = !userWantsSound;
+    v.muted = !userWantsSound;
+    btn.textContent = userWantsSound ? '🔊' : '🔇';
 }
 
-/* ══════════════════════════════════════
-   TIPO SPOTIFY — botón directo a playlist
-   ══════════════════════════════════════ */
-.spotify-link-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 10px 8px 16px;
-    gap: 10px;
-}
-.spotify-link-icon {
-    font-size: 3rem;
-    line-height: 1;
-}
-.spotify-link-title {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #1e1b4b;
-    line-height: 1.3;
-}
-.spotify-link-desc {
-    font-size: .88rem;
-    color: #555;
-    line-height: 1.5;
-}
-.spotify-link-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #1db954;
-    color: #000;
-    font-weight: 700;
-    font-size: .95rem;
-    padding: 12px 28px;
-    border-radius: 50px;
-    text-decoration: none;
-    margin-top: 4px;
-    transition: background .2s, transform .15s;
-    box-shadow: 0 4px 15px rgba(29,185,84,.4);
-}
-.spotify-link-btn::before {
-    content: '♫';
-    font-size: 1.1rem;
-}
-.spotify-link-btn:hover {
-    background: #1ed760;
-    transform: scale(1.04);
-}
-.spotify-link-btn:active {
-    transform: scale(.98);
+function muteVideoBg() {
+    const v = getVideoBg();
+    if (v) v.muted = true;
 }
 
-/* ══════════════════════════════════════
-   VIDEO DE FONDO
-   ══════════════════════════════════════ */
-.video-bg {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    overflow: hidden;
-    background: #0d0520;
+function unmuteVideoBg() {
+    const v = getVideoBg();
+    // Solo desmutea si el usuario eligió tener sonido
+    if (v && userWantsSound) v.muted = false;
 }
 
-.video-bg video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 100vw;
-    min-height: 100vh;
-    width: auto;
-    height: auto;
-    object-fit: cover;
-    pointer-events: none;
+function openModal(embedUrl, platform) {
+    if (platform === 'link') { window.open(embedUrl, '_blank'); return; }
+    muteVideoBg();
+    modalBody.innerHTML = `<iframe src="${embedUrl}"
+        width="100%" height="280" frameborder="0" allowfullscreen
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
+    </iframe>`;
+    modal.classList.add('active');
 }
 
-/* Capa semitransparente para que el contenido sea legible */
-.video-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background: rgba(10, 3, 30, 0.55);
+function closeModalFn() {
+    modal.classList.remove('active');
+    modalBody.innerHTML = '';
+    unmuteVideoBg();
 }
 
-/* ── Botón de sonido ── */
-#sound-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 999;
-    background: rgba(255,255,255,.15);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,.25);
-    color: white;
-    font-size: 1.4rem;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background .2s, transform .15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-#sound-btn:hover { background: rgba(255,255,255,.25); transform: scale(1.08); }
+closeBtnEl.addEventListener('click', closeModalFn);
+modal.addEventListener('click', e => { if (e.target === modal) closeModalFn(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalFn(); });
 
-/* ══════════════════════════════════════
-   FUENTE ROMÁNTICA
-   ══════════════════════════════════════ */
-h1, .welcome-title, .card-title-front {
-    font-family: 'Dancing Script', cursive;
-}
-body {
-    font-family: 'Lato', sans-serif;
-}
+/* ── Cargar tarjetas ── */
+async function loadCards() {
+    const grid = document.getElementById('cards-grid');
+    try {
+        const res  = await fetch(csvUrl);
+        const text = await res.text();
+        const rows = parseCSV(text);
 
-/* ══════════════════════════════════════
-   PANTALLA DE BIENVENIDA
-   ══════════════════════════════════════ */
-#welcome-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(10, 3, 30, 0.75);
-    backdrop-filter: blur(6px);
-    transition: opacity .8s ease, visibility .8s ease;
-}
-#welcome-screen.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
+        const cardsMap = new Map();
+        rows.forEach(row => {
+            const name = (row[0] || '').trim();
+            if (!name) return;
+            if (!cardsMap.has(name)) cardsMap.set(name, []);
+            cardsMap.get(name).push({
+                tipo:          row[1] || '',
+                titulo:        row[2] || '',
+                tituloCancion: row[3] || '',
+                url:           row[4] || ''
+            });
+        });
 
-#welcome-content {
-    text-align: center;
-    padding: 40px 30px;
-    animation: welcomeIn .9s cubic-bezier(.4,0,.2,1);
-}
-@keyframes welcomeIn {
-    from { opacity: 0; transform: translateY(30px) scale(.95); }
-    to   { opacity: 1; transform: translateY(0)    scale(1); }
-}
+        grid.innerHTML = '';
+        totalCards = cardsMap.size;
+        updateCounter();
 
-.welcome-emoji {
-    font-size: 5rem;
-    margin-bottom: 16px;
-    animation: float 3s ease-in-out infinite;
-}
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-12px); }
-}
+        cardsMap.forEach((items, cardName) => {
+            const tipos = items.map(i => i.tipo.toLowerCase().trim());
+            const isPlaylist = tipos.some(t => t === 'playlist');
+            const isSpotify  = tipos.some(t => t === 'spotify');
+            const cardBox = document.createElement('div');
+            cardBox.className = 'card-container';
 
-.welcome-title {
-    font-family: 'Dancing Script', cursive;
-    font-size: clamp(3rem, 10vw, 5.5rem);
-    background: linear-gradient(135deg, #fde68a, #f472b6, #c4b5fd);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 12px;
-    line-height: 1.1;
-}
+            let contentHTML = '';
 
-.welcome-sub {
-    font-size: 1.1rem;
-    color: #e9d5ff;
-    margin-bottom: 36px;
-    font-weight: 300;
-    letter-spacing: 1px;
-}
+            if (isSpotify) {
+                const first     = items[0];
+                const cardTitle = first.titulo || cardName;
+                const url       = first.url.trim();
+                contentHTML = `
+                    <div class="spotify-link-card">
+                        <div class="spotify-link-icon">🎧</div>
+                        <h3 class="spotify-link-title">${cardTitle}</h3>
+                        <p class="spotify-link-desc">Te compartí una playlist especial.<br>Guárdala en tu Spotify 💚</p>
+                        <a class="spotify-link-btn" href="${url}" target="_blank" rel="noopener noreferrer">
+                            Abrir en Spotify
+                        </a>
+                    </div>`;
+            } else if (isPlaylist) {
+                const cardTitle = items.find(i => i.titulo)?.titulo || cardName;
+                contentHTML = `
+                    <h3 class="item-title playlist-title">
+                        <span class="playlist-icon">🎵</span> ${cardTitle}
+                    </h3>
+                    ${buildPlaylistHTML(items)}`;
+            } else {
+                const itemsHTML = items.map(i => createItemHTML(i)).join('');
+                const hint = items.length > 1
+                    ? `<div class="carousel-hint">← Desliza para ver más →</div>` : '';
+                contentHTML = `
+                    <div class="carousel-container">
+                        <div class="carousel-track">${itemsHTML}</div>
+                    </div>${hint}`;
+            }
 
-#welcome-btn {
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
-    color: white;
-    border: none;
-    padding: 16px 40px;
-    font-size: 1.1rem;
-    font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 8px 30px rgba(124,58,237,.5);
-    transition: transform .2s, box-shadow .2s;
-    letter-spacing: .5px;
-}
-#welcome-btn:hover  { transform: scale(1.05); box-shadow: 0 12px 40px rgba(124,58,237,.6); }
-#welcome-btn:active { transform: scale(.97); }
+            cardBox.innerHTML = `
+                <div class="envelope">
+                    <div class="envelope-inner">
+                        <div class="letter">${contentHTML}</div>
+                        <div class="envelope-front">
+                            <h2 class="card-title-front">${cardName}</h2>
+                        </div>
+                        <div class="envelope-flap">
+                            <div class="heart-seal">❤️</div>
+                        </div>
+                    </div>
+                </div>`;
 
-/* ══════════════════════════════════════
-   CONTENIDO PRINCIPAL (oculto hasta bienvenida)
-   ══════════════════════════════════════ */
-#main-content {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity .8s ease .2s, transform .8s ease .2s;
-}
-#main-content.visible {
-    opacity: 1;
-    transform: translateY(0);
+            // Abrir carta
+            cardBox.addEventListener('click', function (e) {
+                if (cardBox.classList.contains('opened')) return;
+                document.querySelectorAll('.card-container.opened').forEach(c => {
+                    c.classList.remove('opened');
+                    c.querySelectorAll('iframe').forEach(f => { f.src = ''; });
+                });
+                cardBox.classList.add('opened');
+                haptic();
+                openedCards++;
+                updateCounter();
+            });
+
+            // Click en track → modal
+            cardBox.addEventListener('click', function (e) {
+                const track = e.target.closest('.sp-track');
+                if (!track || !cardBox.classList.contains('opened')) return;
+                e.stopPropagation();
+                openModal(track.dataset.embed, track.dataset.platform);
+            });
+
+            grid.appendChild(cardBox);
+        });
+
+    } catch (err) {
+        console.error(err);
+        grid.innerHTML = `<div class="loading" style="color:#fca5a5">
+            Error al cargar las sorpresas. Revisa tu enlace del Sheet.
+        </div>`;
+    }
 }
 
-/* ══════════════════════════════════════
-   CONTADOR DE CARTAS
-   ══════════════════════════════════════ */
-#card-counter {
-    font-size: .95rem;
-    color: #e9d5ff;
-    margin-top: 6px;
-    letter-spacing: 1px;
-    min-height: 24px;
-    transition: all .3s;
-}
-
-/* ══════════════════════════════════════
-   ANIMACIÓN DE ENTRADA DE CARTAS
-   ══════════════════════════════════════ */
-.card-container {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity .6s ease, transform .6s ease, margin .8s ease;
-}
-.card-container.card-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-/* El estado opened sobreescribe el transform de entrada */
-.card-container.opened {
-    transform: translateY(0) !important;
-}
-
-/* Ajuste header con fuente nueva */
-.header-container h1 {
-    font-family: 'Dancing Script', cursive;
-    font-size: clamp(2.5rem, 8vw, 4rem);
-}
+window.addEventListener('DOMContentLoaded', loadCards);
