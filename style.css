@@ -417,3 +417,137 @@ body {
     justify-content: center;
 }
 #sound-btn:hover { background: rgba(255,255,255,.25); transform: scale(1.08); }
+
+/* ══════════════════════════════════════
+   FUENTE ROMÁNTICA
+   ══════════════════════════════════════ */
+h1, .welcome-title, .card-title-front {
+    font-family: 'Dancing Script', cursive;
+}
+body {
+    font-family: 'Lato', sans-serif;
+}
+
+/* ══════════════════════════════════════
+   PANTALLA DE BIENVENIDA
+   ══════════════════════════════════════ */
+#welcome-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 3, 30, 0.75);
+    backdrop-filter: blur(6px);
+    transition: opacity .8s ease, visibility .8s ease;
+}
+#welcome-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#welcome-content {
+    text-align: center;
+    padding: 40px 30px;
+    animation: welcomeIn .9s cubic-bezier(.4,0,.2,1);
+}
+@keyframes welcomeIn {
+    from { opacity: 0; transform: translateY(30px) scale(.95); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.welcome-emoji {
+    font-size: 5rem;
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-12px); }
+}
+
+.welcome-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(3rem, 10vw, 5.5rem);
+    background: linear-gradient(135deg, #fde68a, #f472b6, #c4b5fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    line-height: 1.1;
+}
+
+.welcome-sub {
+    font-size: 1.1rem;
+    color: #e9d5ff;
+    margin-bottom: 36px;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+#welcome-btn {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    font-size: 1.1rem;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(124,58,237,.5);
+    transition: transform .2s, box-shadow .2s;
+    letter-spacing: .5px;
+}
+#welcome-btn:hover  { transform: scale(1.05); box-shadow: 0 12px 40px rgba(124,58,237,.6); }
+#welcome-btn:active { transform: scale(.97); }
+
+/* ══════════════════════════════════════
+   CONTENIDO PRINCIPAL (oculto hasta bienvenida)
+   ══════════════════════════════════════ */
+#main-content {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .8s ease .2s, transform .8s ease .2s;
+}
+#main-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ══════════════════════════════════════
+   CONTADOR DE CARTAS
+   ══════════════════════════════════════ */
+#card-counter {
+    font-size: .95rem;
+    color: #e9d5ff;
+    margin-top: 6px;
+    letter-spacing: 1px;
+    min-height: 24px;
+    transition: all .3s;
+}
+
+/* ══════════════════════════════════════
+   ANIMACIÓN DE ENTRADA DE CARTAS
+   ══════════════════════════════════════ */
+.card-container {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity .6s ease, transform .6s ease, margin .8s ease;
+}
+.card-container.card-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* El estado opened sobreescribe el transform de entrada */
+.card-container.opened {
+    transform: translateY(0) !important;
+}
+
+/* Ajuste header con fuente nueva */
+.header-container h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2.5rem, 8vw, 4rem);
+}
