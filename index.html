@@ -1,57 +1,71 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Feliz Cumpleaños! 🎉</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>¡Feliz Cumpleaños! 🎉</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Video de fondo -->
-    <div class="video-bg">
-        <video id="bg-video" autoplay loop playsinline muted>
-            <source src="Aye.mp4" type="video/mp4">
-        </video>
+  <!-- Video de fondo -->
+  <div class="video-bg">
+    <video id="bg-video" autoplay loop playsinline muted>
+      <source src="Aye.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="video-overlay"></div>
+
+  <!-- Canvas partículas -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Botón sonido -->
+  <button id="sound-btn" onclick="toggleSound()">🔇</button>
+
+  <!-- ══ PANTALLA DE BIENVENIDA ══ -->
+  <div id="welcome-screen">
+    <div id="welcome-content">
+      <span class="welcome-emoji">💌</span>
+      <h1 class="welcome-title">Hoy es tu día</h1>
+      <p class="welcome-sub">Preparé algo especial para ti...</p>
+      <button id="welcome-btn" onclick="enterPage()">Abrir mis sorpresas 💜</button>
     </div>
-    <div class="video-overlay"></div>
+  </div>
 
-    <!-- Botón de sonido -->
-    <button id="sound-btn" onclick="toggleSound()">🔇</button>
-
-    <!-- ══ PANTALLA DE BIENVENIDA ══ -->
-    <div id="welcome-screen">
-        <div id="welcome-content">
-            <div class="welcome-emoji">💌</div>
-            <h1 class="welcome-title">Hoy es tu día</h1>
-            <p class="welcome-sub">Preparé algo especial para ti...</p>
-            <button id="welcome-btn" onclick="enterPage()">
-                Abrir mis sorpresas 💜
-            </button>
-        </div>
+  <!-- ══ CONTENIDO PRINCIPAL ══ -->
+  <div id="main-content">
+    <div class="header-container">
+      <h1>¡Feliz Cumpleaños! 🎂✨</h1>
     </div>
-
-    <!-- ══ CONTENIDO PRINCIPAL ══ -->
-    <div id="main-content">
-        <div class="header-container">
-            <h1>¡Feliz Cumpleaños! 🎂✨</h1>
-        </div>
-
-        <div id="cards-grid" class="cards-grid">
-            <div class="loading">Recogiendo las cartas del buzón... 💌</div>
-        </div>
-    </div>
-
-    <!-- Modal reproductor -->
-    <div id="video-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="close-modal" id="close-modal">✖</button>
-            <div id="modal-body"></div>
-        </div>
+    <div id="cards-grid" class="cards-grid">
+      <div class="loading">Recogiendo las cartas del buzón... 💌</div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Sección final especial -->
+    <div id="final-section">
+      <div class="final-card">
+        <span class="final-icon">💜</span>
+        <h2 class="final-title">Gracias por existir</h2>
+        <p class="final-text">
+          Cada recuerdo guardado aquí es un pedacito de todo lo que siento.<br><br>
+          Que este día sea tan especial como tú eres para mí.<br><br>
+          Feliz cumpleaños, mi vida.
+        </p>
+        <p class="final-signature">— Con todo mi amor 💌</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal reproductor -->
+  <div id="video-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="close-modal" id="close-modal">✖</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
