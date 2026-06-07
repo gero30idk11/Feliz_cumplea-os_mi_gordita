@@ -517,18 +517,6 @@ body {
 }
 
 /* ══════════════════════════════════════
-   CONTADOR DE CARTAS
-   ══════════════════════════════════════ */
-#card-counter {
-    font-size: .95rem;
-    color: #e9d5ff;
-    margin-top: 6px;
-    letter-spacing: 1px;
-    min-height: 24px;
-    transition: all .3s;
-}
-
-/* ══════════════════════════════════════
    ANIMACIÓN DE ENTRADA DE CARTAS
    ══════════════════════════════════════ */
 .card-container {
